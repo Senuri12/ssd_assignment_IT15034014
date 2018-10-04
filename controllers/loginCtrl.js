@@ -1,33 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-// const cookieParser = require('cookie-parser');
 
 const app = express();
-// app.use(cookieParser());
 
 let saltValue = null;
 let csrfToken = null;
 let sessionId = null;
 
-
+/*
+Geneates and stores to the server the session id,csrf Token and the salt if the user is a valid user
+Add the cookie
+*/
 router.post('/userAuthenticate',(req,res) => {
-        console.log("inside controller");
-        console.log('body: ', req.body);
+
         if(req.body.username == "John" && req.body.pass == "abc123"){
             sessionId = genSessionId();
             saltValue = genRanSalt(14);
             csrfToken = genCSRTToken(sessionId,saltValue);
 
-            console.log(sessionId);
-            console.log(saltValue);
-            console.log(csrfToken);
 
             res.cookie('sessionId', sessionId, { maxAge: 900000, httpOnly: false });
 
-
-            // alert("logged in")
-            console.log("loggrd in")
             res.redirect('/app/details')
         }
         else {
@@ -36,6 +30,9 @@ router.post('/userAuthenticate',(req,res) => {
 });
 
 
+/*
+pass the CSRF token if the session is valiid
+*/
 router.post("/getCsrfToken",(req,res) =>{
     var sesId = req.body.sessionId;
     if (sesId === sessionId)
@@ -47,6 +44,9 @@ router.post("/getCsrfToken",(req,res) =>{
 });
 
 
+/*
+redirect to th page with a success or failure message by checking the session id and the csrf token
+*/
 router.post("/validateCsrfToken",(req,res)=> {
     var sessId = req.cookies.sessionId;
     var csrfTok = req.body.csrfToken;
@@ -59,6 +59,9 @@ router.post("/validateCsrfToken",(req,res)=> {
 });
 
 
+/*
+generate the session id
+*/
 function genSessionId() {
     var sha = crypto.createHash('sha256');
     sha.update(Math.random().toString());
@@ -66,6 +69,9 @@ function genSessionId() {
 };
 
 
+/*
+generate the csrf token by adding the session id and the salt and sending it to a hash function
+*/
 function genCSRTToken(sessionId,saltvalue) {
     var hash = crypto.createHmac('sha512', saltvalue); /** Hashing algorithm sha512 */
     hash.update(sessionId);
@@ -74,6 +80,9 @@ function genCSRTToken(sessionId,saltvalue) {
 };
 
 
+/*
+generates a salt value
+*/
 function genRanSalt(length) {
     return crypto.randomBytes(Math.ceil(length/2))
         .toString('hex')

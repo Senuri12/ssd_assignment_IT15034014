@@ -24,6 +24,9 @@
 <script>
     window.addEventListener('load', function() {
         accessToken();
+/*
+        Display the success or error message
+*/
         let errorElement = document.getElementById("errorNotification");
         let successElement = document.getElementById("successNotification");
         if (getParameterByName("error") && getParameterByName("error") === "true"){
@@ -35,6 +38,9 @@
             errorElement.style.visibility = "hidden" ;
         }
     })
+/*
+	add the  csrf token to the hidden field
+*/
     function accessToken() {
         $.ajax({
             type: "POST",
@@ -51,6 +57,9 @@
             }
         });
     }
+/*
+    get the cookie which is relevant
+*/
     function getSessionCookie(cookiename)
     {
         var name = cookiename + "=";

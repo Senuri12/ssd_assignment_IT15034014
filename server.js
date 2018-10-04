@@ -8,7 +8,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const loginCtrl = require('./controllers/loginCtrl');
 
-
+/*
+directs to the correct method or page
+*/
 app.use('/',express.static(__dirname + '/view/Login'));
 app.use('/app',express.static(__dirname + '/view/Details'));
 app.use('/userLogin', loginCtrl);
